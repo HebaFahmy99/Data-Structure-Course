@@ -1,0 +1,357 @@
+
+#include <iostream>
+using namespace std;
+
+template <class type>
+class list
+{
+public:
+    class Node
+    {
+    public:
+        type item;   //stores the value at node
+        Node* next; //stores the link to next node
+        Node* prv; //stores the link to previous node
+
+        //constructor
+        Node(type v)
+        {
+            this->item = v;
+            this->next = nullptr;
+            this->prv = nullptr;
+        }
+    };
+    // Inner class iterator
+    class iterator
+    {
+        friend class list;
+
+    private:
+        Node* cur;
+        iterator(Node* ptr)
+        {
+            cur = ptr;
+        }
+
+    public:
+        // Overload the operator ++
+        void operator++(int)
+        {
+            try
+            {
+                if (cur == nullptr || cur->next == nullptr)
+                {
+                    throw "Exception..! Reach end of the list";
+                }
+                else
+                {
+                    cur = cur->next;
+                }
+            }
+            catch (const char* Msg)
+            {
+                cout << Msg << endl;
+            }
+        }
+        // Overload the operator --
+        void operator--(int)
+        {
+            try
+            {
+                if (cur == nullptr || cur->prv == nullptr)
+                {
+                    throw "Exception ! Reach Start of the list";
+                }
+                else
+                {
+                    cur = cur->prv;
+                }
+            }
+            catch (const char* Msg)
+            {
+                cout << Msg << endl;
+            }
+        }
+        // Overload for the dereference operator *
+        type& operator*() const
+        {
+            if (cur != nullptr)
+                return cur->item;
+
+        }
+    };// End of inner class iterator
+
+    //default constructor
+
+    list()
+    {
+        first = nullptr;
+        length = 0;
+    }
+
+    //parameterized constructor
+    list(type value, int initial_size)
+    {
+        for (int i = 0; i < initial_size; i++)
+        {
+
+            //create a new node
+            Node* newNode = new Node(value);
+            if (first == nullptr)
+            {
+                first = newNode;
+            }
+            else
+            {
+                Node* temp = first;
+                while (temp->next != nullptr)
+                {
+                    temp = temp->next;
+                }
+
+                //now temp points to the last node of the list
+                newNode->prev = temp;
+                newNode->next = nullptr;
+                temp->next = newNode;
+            }
+            length++;
+        }
+    }
+
+    //default destructor
+    ~list()
+    {
+        Node* temp = first;
+        while (temp != nullptr)
+        {
+            Node* nextTemp = temp->next;
+            delete temp;
+            temp = nextTemp;
+        }
+    }
+
+    //returns size of list
+    int size()
+    {
+        return length;
+    }
+
+    //inserts value at given position
+    void insert(type value, iterator position)
+    {
+        //insert the value before the position specified
+        Node* temp = position.cur;
+        Node* newNode = new Node(value);
+
+        if (temp == nullptr)
+        {
+            //first element in the list
+            first = newNode;
+        }
+        else
+        {
+            newNode->next = temp;
+            newNode->prv = temp->prv;
+            if (temp->prv != nullptr)
+            {
+                temp->prv->next = newNode;
+            }
+            else
+            {
+                first = newNode;
+            }
+            temp->prv = newNode;
+        }
+        length++;
+    }
+
+    //inserts value
+    void insert(type value)
+    {
+        //insert the value before the position specified
+        Node* temp = first;
+
+        while (temp != nullptr && temp->next != nullptr)
+        {
+            temp = temp->next;
+        }
+
+        Node* newNode = new Node(value);
+
+        if (temp == nullptr)
+        {
+            //first element in the list
+            first = newNode;
+        }
+        else
+        {
+            newNode->prv = temp;
+            temp->next = newNode;
+        }
+        length++;
+    }
+
+//erases value from given position
+    iterator erase(iterator position)
+    {
+
+        Node* temp = position.cur;
+        Node* returnNext = nullptr;
+        try
+        {
+            if (temp->next == nullptr)
+            {
+                throw "Exception ! Position after last element";
+            }
+            else
+            {
+                returnNext = temp->next;
+            }
+        }
+        catch (const char* Msg)
+        {
+            cout << Msg << endl;
+        }
+
+        if (temp == nullptr)
+        {
+            cout<<"List is empty can not removed";
+
+        }
+        else if (temp->prv == nullptr)
+        {
+            first = temp->next;
+            first->prv=nullptr;
+            delete temp;
+        }
+        else
+        {
+            temp->prv->next = temp->next;
+            if (temp->next != nullptr)
+            {
+                temp->next->prv = temp->prv;
+            }
+            delete temp;
+        }
+
+        length--;
+        return returnNext;
+
+    }
+//deep copy
+    list<type>& operator=(list<type> another_list)
+    {
+        //creating another list
+        list<type> newList;
+
+        iterator temp = another_list.begin();
+
+        while (temp.cur != nullptr)
+        {
+            type data = temp.cur->item;
+            //create a new node in second list
+            Node* newNode = new Node(data);
+
+            if (newList.first == nullptr)
+            {
+                newList.first = newNode;
+            }
+            else
+            {
+                Node* tempp = newList.first;
+
+                while (tempp->next != nullptr)
+                {
+                    tempp = tempp->next;
+                }
+                newNode->prev = tempp;
+                tempp->next = newNode;
+                newList.length++;
+            }
+
+            if (temp.cur->next == nullptr)
+            {
+                break;
+            }
+            temp++;
+        }
+    }
+
+//sets the iterator pointer to start node
+    iterator begin()
+    {
+        return (iterator(first));
+    }
+
+//sets the iterator pointer to end node
+    iterator end()
+    {
+        Node* temp = first;
+        while (temp != nullptr && temp->next != nullptr)
+        {
+            temp = temp->next;
+        }
+        //now temp points to the last node of the list
+        return iterator(temp);
+    }
+//prints the list
+    void print()
+    {
+        if (first == nullptr)
+        {
+            cout << "List is empty\n";
+        }
+        else
+        {
+            cout << "List : [ " << first->item;
+            Node* temp = first->next;
+            while (temp != nullptr)
+            {
+                cout << ", " << temp->item;
+                temp = temp->next;
+            }
+            cout << " ] \n";
+        }
+    }
+private:
+    Node* first; //stores head pointer
+    int length; //size of the list
+};
+
+int main()
+{
+    list<int> myList;
+    myList.insert(20);
+    myList.insert(30);
+    myList.insert(50);
+    myList.insert(60);
+    myList.print(); //[ 20 30 50 60]
+
+    list<int>::iterator it = myList.begin();
+    myList.insert(10,it); //Insert 10 before 20
+    it++;// points to 30
+    cout<<*it<<endl; //print 30
+
+    it++;// points to 50
+    cout<<*it<<endl; //print 50
+    myList.insert(40,it); //Insert 40 before 50
+    myList.print(); //[ 10 20 30 40 50 60]
+
+    it--; //points to 40
+    cout<<*it<<endl; // print 40
+    myList.erase(it);// Erase 40
+    cout<<"after erase\n";
+    myList.print(); //[ 10 20 30 50 60]
+
+    cout<<"\n";
+    list<string> myList2;
+    myList2.insert("heba");
+    myList2.insert("fah");
+    myList2.insert("bio");
+    myList2.print(); //[ mohamed salah bio]
+
+
+    return 0;
+
+
+}
