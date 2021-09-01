@@ -1,0 +1,93 @@
+
+#include <iostream>
+
+using namespace std;
+
+int MAXSIZE = 1000;
+template <class T>
+class Stack{
+private:
+    int capacity;
+    T* arr = new T[MAXSIZE] ; ;
+public:
+    Stack()
+    {
+        capacity = 0 ;
+    }
+    Stack(T values , int initial_size)
+    {
+        capacity = initial_size ;
+        for (int i=0 ; i<capacity ; i++)
+        {
+            arr[i] = values ;
+        }
+    }
+    ~Stack()
+    {
+        delete [] arr ;
+    }
+    T & top()
+    {
+        if (capacity == 0)
+            cout << "stack is empty\n" ;
+       return arr[capacity] ;
+    }
+    void pop()
+    {
+        if (capacity == 0)
+            cout << "stack is empty\n" ;
+        else
+            capacity -- ;
+    }
+    void push (T element)
+    {
+        capacity ++ ;
+        arr[capacity] = element ;
+    }
+    int Size ()
+    {
+        return capacity ;
+    }
+
+};
+
+int main()
+{
+    Stack <int> intStackObj (2 , 10) ;
+    cout <<"     Int test     \n";
+    cout << "Stack Size at the begining: " << intStackObj.Size() << endl ;
+    intStackObj.pop();
+    intStackObj.pop();
+    intStackObj.pop();
+    intStackObj.pop();
+    cout << "Stack Size After popping: " << intStackObj.Size() << endl ;
+    intStackObj.push(10) ;
+    intStackObj.push(9) ;
+    cout << "Stack Size After pushing: " << intStackObj.Size() << endl ;
+    cout << "Top element in the stack: " << intStackObj.top() ;
+
+    cout << "\n-----------------------------\n";
+
+    Stack<string> stringStackObj ("Bioinformatics" , 2) ;
+    cout <<"     String test     \n";
+    cout << "Stack Size at the begining: " << stringStackObj.Size() << endl ;
+    stringStackObj.pop();
+    cout << "Stack Size After popping: " << stringStackObj.Size() << endl ;
+    stringStackObj.push("Department") ;
+    cout << "Stack Size After pushing: " << stringStackObj.Size() << endl ;
+    cout << "Top element in the stack: " << stringStackObj.top() << endl ;
+
+     cout << "\n-----------------------------\n";
+
+    Stack<string> charStackObj ("H" , 5) ;
+    cout <<"     Character test     \n";
+    cout << "Stack Size at the begining: " << charStackObj.Size() << endl ;
+    charStackObj.pop();
+    cout << "Stack Size After popping: " << charStackObj.Size() << endl ;
+    charStackObj.push("E") ;
+    charStackObj.push("B") ;
+    cout << "Stack Size After pushing: " << charStackObj.Size() << endl ;
+    cout << "Top element in the stack: " << charStackObj.top() << endl ;
+
+    return 0;
+}
