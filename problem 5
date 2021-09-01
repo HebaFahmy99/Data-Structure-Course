@@ -1,0 +1,87 @@
+
+//problem 5
+#include <iostream>
+
+using namespace std;
+struct Node {
+     string data ;
+     int priority ;
+     Node* next ;
+     };
+class priorityQueue
+{
+private:
+     Node* top ;
+public:
+    priorityQueue()
+    {
+        top = NULL;
+    }
+    ~priorityQueue()
+    {
+        delete top ;
+    }
+    string enqueue (string element , int priority)
+    {
+        Node* newNode = new Node();
+        newNode->data = element ;
+        newNode->priority = priority ;
+        newNode->next = NULL ;
+
+        if (top == NULL || priority < top->priority)
+        {
+            newNode->next = top ;
+            top = newNode ;
+        }
+        else
+        {
+            Node* temp=top;
+            while (temp->next !=NULL && temp->next->priority <= priority)
+            {
+                temp = temp->next ;
+            }
+            newNode->next = temp->next ;
+            temp->next = newNode ;
+        }
+         return newNode->data;
+    }
+
+    string dequeue()
+    {
+        string newTop ;
+        if (top == NULL)
+            cout << "Queue is empty!\n";
+        else
+        {
+            newTop = top->data ;
+            Node* ptr = top ;
+            top = top->next ;
+            delete ptr ;
+        }
+        return newTop ;
+    }
+
+    void display()
+    {
+        Node* ptr ;
+        ptr = top ;
+        if(top == NULL)
+            cout << "Empty queue\n";
+        else
+        {
+
+            while(ptr != NULL){
+                cout << "Priority: " << ptr->priority << "    " << "Data: " <<ptr->data << endl  ;
+                ptr = ptr->next;}
+        }
+    }
+};
+
+int main()
+{
+    priorityQueue q ;
+    q.enqueue("world" ,10);
+    q.enqueue("Hello",5);
+    cout << q.dequeue() << " " << q.dequeue() <<endl;
+    return 0;
+}
